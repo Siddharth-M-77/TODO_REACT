@@ -5,6 +5,8 @@ import { RiDeleteBinFill } from "react-icons/ri";
 const Todo = () => {
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState([]);
+  const [editIndex, setEditIndex] = useState(null);
+  const [editTask, setEditTask] = useState("");
 
   const handleInputChange = (e) => {
     setTask(e.target.value);
@@ -21,6 +23,24 @@ const Todo = () => {
   const handleDeleteTask = (index) => {
     const updatedTasks = tasks.filter((_, i) => i !== index);
     setTasks(updatedTasks);
+  };
+
+  const handleEditTask = (index) => {
+    setEditIndex(index);
+    setEditTask(tasks[index]);
+  };
+
+  const handleSaveTask = (index) => {
+    const updatedTasks = tasks.map((item, i) =>
+      i === index ? editTask : item
+    );
+    setTasks(updatedTasks);
+    setEditIndex(null);
+    setEditTask("");
+  };
+
+  const handleEditInputChange = (e) => {
+    setEditTask(e.target.value);
   };
 
   return (
@@ -49,18 +69,39 @@ const Todo = () => {
         </form>
       </section>
 
-      <div className="w-[70%] h-[100vh] mt-5 ">
+      <div className="w-[70%] h-full mt-5 ">
         <ul className="w-full">
           {tasks.map((item, i) => (
             <li
               key={i}
               className="flex items-center justify-between p-4 mb-2 bg-gray-100 rounded-lg shadow-md"
             >
-              <h4>{item}</h4>
+              {editIndex === i ? (
+                <input
+                  type="text"
+                  value={editTask}
+                  onChange={handleEditInputChange}
+                  className="px-2 py-1 w-full"
+                />
+              ) : (
+                <h4>{item}</h4>
+              )}
               <div className="icons flex items-center justify-center gap-2">
-                <span className="bg-green-400 p-2 rounded-full">
-                  <MdDone />
-                </span>
+                {editIndex === i ? (
+                  <button
+                    className="bg-green-400 p-2 rounded-full"
+                    onClick={() => handleSaveTask(i)}
+                  >
+                    <MdDone />
+                  </button>
+                ) : (
+                  <button
+                    className="bg-green-400 p-2 rounded-full"
+                    onClick={() => handleEditTask(i)}
+                  >
+                    <MdDone />
+                  </button>
+                )}
                 <span
                   className="bg-red-500 p-2 rounded-full cursor-pointer"
                   onClick={() => handleDeleteTask(i)}
